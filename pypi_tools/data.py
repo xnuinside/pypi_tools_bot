@@ -45,7 +45,7 @@ async def request_package_info_from_pypi(package_name, detailed=False):
         output = f'<b>Package name:</b> {package_name}\n' \
                  f'<b>Latest version:</b> {info["version"]}\n' \
                  f'<b>Homepage:</b> {info["project_urls"]["Homepage"]}\n'\
-                 f'<b>PyPi url:</b> https://pypi.org/project/{package_name}'
+                 f'<b>PyPi url:</b> https://pypi.org/project/{package_name}\n'
 
         if detailed:
             output += f'<b>Short description:</b> {info["summary"]}\n' \
