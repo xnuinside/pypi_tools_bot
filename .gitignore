@@ -4,3 +4,4 @@
 *.json
 pypi_tools/.env
 data/
+pypi_tools/*.json

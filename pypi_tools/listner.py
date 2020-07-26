@@ -6,8 +6,6 @@ import sentry_sdk
 from aiogram import Bot, Dispatcher, executor, types
 
 from datetime import datetime, timedelta
-import sys
-sys.path[0] = '/app'
 import pypi_tools.data as d
 from pypi_tools import __version__
 from pypi_tools.models import init_db, User, Chat
