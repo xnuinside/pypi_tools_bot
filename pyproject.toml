@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pypi_tools"
+version = "0.0.2"
+description = ""
+authors = ["xnuinside <xnuinside@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+google-cloud-bigquery = "^1.26.0"
+requests = "^2.24.0"
+python-dotenv = "^0.14.0"
+gino = "^1.0.1"
+alembic = "^1.4.2"
+aiogram = "^2.9.2"
+gino-admin = "^0.1.0"
+gino-sanic = "^0.1.0"
+sentry-sdk = "^0.16.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

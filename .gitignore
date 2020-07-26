@@ -1,0 +1,6 @@
+*/__pycache__
+*.pyc
+.idea/
+*.json
+pypi_tools/.env
+data/
