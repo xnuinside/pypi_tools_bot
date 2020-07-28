@@ -87,18 +87,21 @@ async def send_package_stats(message):
         executor = ThreadPoolExecutor(5)
         tasks = [d.bq_get_downloads_stats_for_package(
             package_name, (datetime.now().date() - timedelta(days=i+1)).isoformat())
-            for i in range(5)]
+            for i in range(7)]
 
         for job in tasks:
             threads.append(executor.submit(job.result))
 
         for future in as_completed(threads):
             results.append(list(future.result()))
-        print(results)
-        for i in range(5):
-            date_ = (datetime.now().date() - timedelta(days=i+1))
+        temp_result = {}
+        for i in range(7):
+            date_ = int(results[i][0].date)
             downloads = results[i][0].downloads
-            output += f"<b>{date_}</b>: {downloads}\n"
+            temp_result[date_] = downloads
+        sorted_dict = dict(sorted(temp_result.items(), reverse=True))
+        for key, item in sorted_dict.items():
+            output += f"<b>{datetime.strptime(str(key), '%Y%m%d').date().isoformat()}</b>: {item}\n"
     await message.answer(output, parse_mode="html")
 
 
@@ -143,7 +146,6 @@ async def search_command(message):
 
 @dp.message_handler(commands=['track'])
 async def track_command(message):
-    print(message)
     await message.answer(message)
 
 

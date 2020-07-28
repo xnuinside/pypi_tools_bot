@@ -11,7 +11,7 @@ client = bigquery.Client()
 def bq_get_downloads_stats_for_package(package_name, date_):
     formatted_date_ = date_.replace('-', '')
     query_job = client.query(
-        f"SELECT count(timestamp) as downloads FROM `the-psf.pypi.downloads{formatted_date_}` "
+        f"SELECT count(timestamp) as downloads, {formatted_date_} as date FROM `the-psf.pypi.downloads{formatted_date_}` "
         f"WHERE file.project=\'{package_name}\'")
     return query_job
 
