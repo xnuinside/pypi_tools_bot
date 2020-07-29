@@ -10,11 +10,14 @@ Available commands:
     
     Description: return download statistic for last 5 days
     
+    You can setup for how many days you want to have statistic with defining days numbers after command.
+    Example: */stats:10 gino* Bot will send to you download statistic for 10 days.
+
 - **/search package_name**
     
     Description: return info about package and links to Package's homepage and PyPi page
     
-    /search:detailed package_name
+    */search:detailed package_name*
     
   Description: return explicit info about package
 
