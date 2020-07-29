@@ -6,11 +6,11 @@ and send every day 5 random packages from PyPi.
 You can use Bot in Telegram - https://t.me/pypi_tools_bot
 
 Available commands:
-- /stats package_name 
+- **/stats package_name**
     
     Description: return download statistic for last 5 days
     
-- /search package_name
+- **/search package_name**
     
     Description: return info about package and links to Package's homepage and PyPi page
     
@@ -18,8 +18,22 @@ Available commands:
     
   Description: return explicit info about package
 
-- /help
+- **/help**
 
     To get help
+    
+- **/releases package_name**
+
+    Use this command to get a list with 7 last package releases with dates.
+    Example: */releases aiohttp*
+    
+    Use **/releases:full** to get full list of package releases with dates
+    Example: */releases:full aiohttp*
+
+
+- **/random** 
+
+    Commands returns random package from PyPi
+    Example: */random*
 
 

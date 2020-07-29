@@ -33,6 +33,6 @@ class Packages(db.Model):
 
 
 async def init_db():
-    await db.set_bind(f'postgresql://bot:bot@{os.environ["DB_HOST"]}/bot')
+    await db.set_bind(f'postgresql://bot:bot@{os.environ.get("DB_HOST", "localhost")}/bot')
     await db.gino.create_all()
     return db
