@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pypi_tools"
-version = "0.0.4"
+version = "0.0.5"
 description = ""
 authors = ["xnuinside <xnuinside@gmail.com>"]
 
@@ -15,9 +15,13 @@ aiogram = "^2.9.2"
 gino-admin = "^0.1.0"
 gino-sanic = "^0.1.0"
 sentry-sdk = "^0.16.2"
+aiocache = {extras = ["redis"], version = "^0.11.1"}
+pandas = "^1.1.0"
+matplotlib = "^3.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+psycopg2-binary = "^2.8.5"
 
 [build-system]
 requires = ["poetry>=0.12"]

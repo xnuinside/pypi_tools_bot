@@ -1,1 +1,5 @@
-data/
+data/*
+database/*
+temp/
+__pycache__/
+pypi_tools.egg-info/

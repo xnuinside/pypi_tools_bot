@@ -4,17 +4,19 @@ import logging
 from functools import wraps
 import sentry_sdk
 from aiogram import Bot, Dispatcher, executor, types
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from pypi_tools.logic import validate_input_logic
 import pypi_tools.data as d
+import pypi_tools.vizualizer as v
+
 import pypi_tools.readme as r
 from pypi_tools.models import init_db, User, Chat
+import asyncio
 
 
 logging.basicConfig(level=logging.INFO)
 
-sentry_sdk.init(os.environ["SENTRY_PATH"])
+#sentry_sdk.init(os.environ["SENTRY_PATH"])
 
 bot = Bot(token=os.environ["BOT_API_KEY"], parse_mode="html")
 dp = Dispatcher(bot)
@@ -75,27 +77,34 @@ async def send_package_stats(message):
     if len(output.split()) == 1:
         days = sub_command
         package_name = output
-        output = f"Stats for package <b>{package_name}</b> \nfor last {days} days (numbers of downloads): \n\n"
-        threads = []
-        results = []
-        executor = ThreadPoolExecutor(4)
-        tasks = [d.bq_get_downloads_stats_for_package(
-            package_name, (datetime.now().date() - timedelta(days=i+1)).isoformat())
-            for i in range(days)]
-        for job in tasks:
-            threads.append(executor.submit(job.result))
-        for future in as_completed(threads):
-            results.append(list(future.result()))
-        temp_result = {}
-        for i in range(days):
-            date_ = int(results[i][0].date)
-            downloads = results[i][0].downloads
-            temp_result[date_] = downloads
-        sorted_dict = dict(sorted(temp_result.items(), reverse=True))
-        for key, item in sorted_dict.items():
-            output += f"<b>{datetime.strptime(str(key), '%Y%m%d').date().isoformat()}</b>: {item}\n"
+        current_date = datetime.now().date()
+        data_ = await d.cached_package_downloads_stats(package_name, days, current_date)
+        output = d.stats_text(data_, package_name, days)
     await message.answer(output)
 
+@dp.message_handler(lambda message: message.text and (
+        '/plot' in message.text.lower() or 'plot:' in message.text.lower()))
+@validate_input(command='plot',
+                known_sub_commands={'@any_number': lambda num: num})
+async def send_package_stats_with_graph(message):
+    output = message.output
+    sub_command = message.sub_command or 5
+    if len(output.split()) == 1:
+        days = sub_command
+        package_name = output
+        current_date = datetime.now().date()
+        data_ = await d.cached_package_downloads_stats(package_name, days, current_date)
+        output = d.stats_text(data_, package_name, days)   
+        temp = 'temp/'
+        os.makedirs(temp, exist_ok=True)
+        # for pandas range
+        start_date = current_date - timedelta(days=2)
+        file_name = f'{temp}/{package_name}:{current_date - timedelta(days=1)}:{days}.png'
+        if not os.path.isfile(file_name):
+            file_name = v.generate_graph(start_date, [item for _, item in data_.items()][::-1], file_name)
+        file_ = types.InputFile(file_name)
+    await message.answer(output)
+    await message.answer_photo(file_)
 
 @dp.message_handler(commands=['random'])
 async def command(message):
@@ -151,6 +160,7 @@ async def releases_command(message):
 async def track_command(message):
     output = message.output
     print(output)
+    
     if len(output.split()) == 1:
         print(output)
     await message.answer(output)

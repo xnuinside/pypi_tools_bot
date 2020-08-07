@@ -12,6 +12,7 @@ class User(db.Model):
     id = db.Column(db.String(), unique=True, primary_key=True)
     first_name = db.Column(db.String())
     last_name = db.Column(db.String())
+    #track_packages = db.Column(db.Array(db.String))
 
 
 class Chat(db.Model):
@@ -21,18 +22,8 @@ class Chat(db.Model):
     type = db.Column(db.String())
 
 
-class MessageHistory(db.Model):
-    __tablename__ = "message_history"
-
-
-class Packages(db.Model):
-    __tablename__ = "packages"
-    id = db.Column(db.String(), unique=True, primary_key=True)
-    downloads = db.Column(db.Integer())
-    date = db.Column(db.Date())
-
-
 async def init_db():
-    await db.set_bind(f'postgresql://bot:bot@{os.environ.get("DB_HOST", "localhost")}/bot')
+    print(f'postgresql://{os.environ.get("POSTGRES_USER", "bot")}:{os.environ.get("POSTGRES_PASSWORD", "localhost")}@{os.environ.get("DB_HOST", "bot")}/{os.environ.get("POSTGRES_DB", "bot")}')
+    await db.set_bind(f'postgresql://{os.environ.get("POSTGRES_USER", "bot")}:{os.environ.get("POSTGRES_PASSWORD", "localhost")}@{os.environ.get("DB_HOST", "bot")}/{os.environ.get("POSTGRES_DB", "bot")}')
     await db.gino.create_all()
     return db

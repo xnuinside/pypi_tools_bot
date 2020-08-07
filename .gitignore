@@ -4,4 +4,7 @@
 *.json
 pypi_tools/.env
 data/
+database/
+temp/
 pypi_tools/*.json
+pypi_tools.egg-info/

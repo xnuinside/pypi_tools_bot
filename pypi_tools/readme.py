@@ -12,7 +12,13 @@ help_text = "Commands: \n\n" \
             "You can setup for how many days you want to have statistic with defining days numbers after command.\n" \
             ">>> Example: <i><b>/stats:10 gino</b></i> . Bot will send to you download statistic for 10 days. \n\n" \
             "-<b>/releases</b> Use this command to get a list with 7 last package releases with dates." \
-            ">>> Example: <i><b>/releases aiohttp</b></i> \n" \
+            ">>> Example: <i><b>/releases aiohttp</b></i> \n\n" \
+            "- <b>/plot</b>. Use <i><b>/plot</b></i> command to get plot with download statistics for Python Package. \n" \
+            ">>> Example:  <i><b>/plot gino</b></i> \n" \
+            "You can setup for how many days you want to have on plot statistic with defining days numbers after command.\n" \
+            ">>> Example: <i><b>/plot:10 gino</b></i> . Bot will send to you download statistic for 10 days. \n\n" \
+            "-<b>/releases</b> Use this command to get a list with 7 last package releases with dates." \
+            ">>> Example: <i><b>/releases aiohttp</b></i> \n\n" \
             "Use <i><b>/releases:full</b></i> to get full list of package releases with dates\n" \
             ">>> Example: <i><b>/releases:full aiohttp</b></i> \n\n" \
             "-<b>/random</b> Commands returns random package from PyPi\n" \
