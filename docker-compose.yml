@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ./database/data:/var/lib/postgresql/data
   admin:
     env_file:
       - ./pypi_tools/.env
@@ -29,3 +29,11 @@ services:
       - "5455:5455"
     depends_on:
       - postgres
+      - redis
+  redis:
+    image: redis:5.0.5
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - 6379:6379

@@ -1,9 +1,10 @@
 ## Python PyPi Bot for Telegram 
 
-Bot provide downloads statistic from PyPi for last 3 days by command '/stats' 
-and send every day 5 random packages from PyPi.
+Bot provide set of commands to work with PyPi 
 
 You can use Bot in Telegram - https://t.me/pypi_tools_bot
+
+Or set up it & run on your own server & telegram bot.
 
 Available commands:
 - **/stats package_name**
@@ -12,6 +13,14 @@ Available commands:
     
     You can setup for how many days you want to have statistic with defining days numbers after command.
     Example: */stats:10 gino* Bot will send to you download statistic for 10 days.
+
+- **/plot package_name**
+    
+    Description: return plot with download statistic for last 5 days
+    
+    You can setup for how many days you want to have statistic with defining days numbers after command.
+    Example: */plot:10 gino* Bot will send to you download statistic for 10 days.
+
 
 - **/search package_name**
     
