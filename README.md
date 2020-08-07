@@ -6,6 +6,8 @@ You can use Bot in Telegram - https://t.me/pypi_tools_bot
 
 Or set up it & run on your own server & telegram bot.
 
+![PyPi Tools Bot](img/pypi_tools.gif)
+
 Available commands:
 - **/stats package_name**
     
