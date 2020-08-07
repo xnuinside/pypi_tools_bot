@@ -1,6 +1,7 @@
 from google.cloud import bigquery
 from datetime import datetime, timedelta
 import httpx
+import os
 from ast import literal_eval
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
@@ -16,7 +17,7 @@ from aiocache.serializers import PickleSerializer
 load_dotenv()
 client = bigquery.Client()
 
-cache = Cache(Cache.REDIS, endpoint="127.0.0.1", port=6379, namespace="main")
+cache = Cache(Cache.REDIS, endpoint=os.environ.get('REDIS_HOST', '127.0.0.1'), port=6379, namespace="main")
 
 async def get_download_stats_for_period_from_today(package_name, days, current_date):
     """ method returns a sorted by date form yesterday to past dict with downloads numbers """
@@ -33,6 +34,7 @@ async def get_download_stats_for_period_from_today(package_name, days, current_d
         else:
             dates_with_no_cache.append(date_)
     executor = ThreadPoolExecutor(4)
+    
     tasks = [bq_get_downloads_stats_for_package(package_name, date_) for date_ in dates_with_no_cache]
     for job in tasks:
         threads.append(executor.submit(job.result))
@@ -64,9 +66,8 @@ async def cached_package_downloads_stats(package_name, days, current_date):
     return result
     
 def bq_get_downloads_stats_for_package(package_name, date_):
-    formatted_date_ = date_.replace('-', '')
     query_job = client.query(
-        f"SELECT count(timestamp) as downloads, {formatted_date_} as date FROM `the-psf.pypi.downloads{formatted_date_}` "
+        f"SELECT count(timestamp) as downloads, {date_} as date FROM `the-psf.pypi.downloads{date_}` "
         f"WHERE file.project=\'{package_name}\'")
     return query_job
 

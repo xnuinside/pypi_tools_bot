@@ -10,10 +10,10 @@ def create_linear_plot(start_date, downloads):
     df = pd.DataFrame(pd.date_range(start_date - timedelta(days=days_count-1), start_date).rename('date'))
     df['downloads'] = downloads
     freq = 'D'
-    if days_count > 31:
+    """#if days_count > 31:
         freq = 'M'
     elif days_count > 7:
-        freq = 'W'
+        freq = 'W'"""
     df = df.groupby(pd.Grouper(key='date', freq=freq))['downloads'].sum()
     df.index = df.index + pd.DateOffset()
 
