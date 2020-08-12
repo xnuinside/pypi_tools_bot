@@ -7,4 +7,8 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 RUN export PYTHONPATH=/app
 COPY pypi_tools /app/pypi_tools
 WORKDIR /app/pypi_tools
-CMD export PYTHONPATH=$PYTHONPATH:/app && python listner.py
+FROM base as main
+CMD export PYTHONPATH=$PYTHONPATH:/app && python main.py
+
+FROM base as scheduler
+CMD export PYTHONPATH=$PYTHONPATH:/app && python scheduler.py

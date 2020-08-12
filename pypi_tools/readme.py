@@ -22,4 +22,12 @@ help_text = "Commands: \n\n" \
             "Use <i><b>/releases:full</b></i> to get full list of package releases with dates\n" \
             ">>> Example: <i><b>/releases:full aiohttp</b></i> \n\n" \
             "-<b>/random</b> Commands returns random package from PyPi\n" \
-            ">>> Example: <i><b>/random</b></i> \n"""
+            ">>> Example: <i><b>/random</b></i> \n\n" \
+            "-<b>/track package_name</b> Command to add package to your" \
+            " track for getting updates about new releases on PyPi. \n" \
+            " You will get notification when new release will be able on PyPi. \n" \
+            ">>> Example: <i><b>/track flask</b></i> \n" \
+            "Use sub-command :stop for remove package from track and stop getting updates about releases \n" \
+            ">>> Example: <i><b>/track:stop flask</b></i> \n " \
+            "Use sub-command :nodev to get updates without dev releases (versions alpha, beta and etc will be excluded from notifications) \n" \
+            ">>> Example: <i><b>/track:nodev flask</b></i> \n """
