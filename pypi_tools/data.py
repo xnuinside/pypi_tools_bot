@@ -45,7 +45,6 @@ async def get_download_stats_for_period_from_today(package_name, days, current_d
         date_ = int(results[i][0].date)
         downloads = results[i][0].downloads
         temp_result[date_] = downloads
-        print(f'{package_name}:{date_}')
     await asyncio.gather(*[cache.set(f'{package_name}:{key}', value) for key, value in temp_result.items()])
     temp_result.update(cached_result)
     sorted_dict = dict(sorted(temp_result.items(), reverse=True))
@@ -98,12 +97,14 @@ async def get_random_package():
 
 
 async def request_package_info_from_pypi(package_name, detailed=False):
-    result = await httpx.get(f"https://pypi.org/pypi/{package_name}/json")
+    result = httpx.get(f"https://pypi.org/pypi/{package_name}/json")
     if result.status_code == 200:
         result = result.json()
         info = result["info"]
+        python_version = info["requires_python"].replace('<', "to ")
         output = f'<b>Package name:</b> {package_name}\n' \
-                 f'<b>Latest version:</b> {info["version"]} | <b>Python version:</b> {info["requires_python"]}\n' \
+                 f'<b>Latest version:</b> {info["version"]} |' \
+                 f'<b>Python version:</b> \'{python_version}\'\n' \
                  f'<b>Homepage:</b> {info["project_urls"]["Homepage"]}\n'\
                  f'<b>PyPi url:</b> https://pypi.org/project/{package_name}\n'
         if detailed:
@@ -119,11 +120,14 @@ async def request_package_info_from_pypi(package_name, detailed=False):
     return output
 
 
-async def get_release_list(package_name):
-    result = await httpx.get(f"https://pypi.org/rss/project/{package_name}/releases.xml")
+async def get_release_list(package_name, nodev=False):
+    result = httpx.get(f"https://pypi.org/rss/project/{package_name}/releases.xml")
+    print(result.status_code)
+    if result.status_code == 404:
+        return None
     executor = ThreadPoolExecutor(max_workers=1)
     loop = asyncio.get_event_loop()
-    versions = await loop.run_in_executor(executor, parse_xml_file_with_version, result.text)
+    versions = await loop.run_in_executor(executor, parse_xml_file_with_version, result.text, nodev)
     return versions
 
 

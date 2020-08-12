@@ -1,27 +1,25 @@
 [tool.poetry]
 name = "pypi_tools"
-version = "0.0.5"
-description = ""
-authors = ["xnuinside <xnuinside@gmail.com>"]
+version = "0.1.0"
+description = "Telegram Bot @pypi_tools_bot to track packages releases on PyPi, get downloads stats and etc."
+authors = ["Iuliia Volkova <xnuinside@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
 google-cloud-bigquery = "^1.26.0"
 requests = "^2.24.0"
 python-dotenv = "^0.14.0"
-gino = "^1.0.1"
 alembic = "^1.4.2"
 aiogram = "^2.9.2"
-gino-admin = "^0.1.0"
-gino-sanic = "^0.1.0"
 sentry-sdk = "^0.16.2"
 aiocache = {extras = ["redis"], version = "^0.11.1"}
 pandas = "^1.1.0"
 matplotlib = "^3.3.0"
+httpx = "^0.14.1"
+async_cron = "^1.6.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-psycopg2-binary = "^2.8.5"
 
 [build-system]
 requires = ["poetry>=0.12"]

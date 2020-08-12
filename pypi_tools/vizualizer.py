@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
 import pandas as pd
+from random import choice
 import matplotlib.pyplot as plt
 
 
@@ -18,7 +19,10 @@ def create_linear_plot(start_date, downloads):
     df.index = df.index + pd.DateOffset()
 
     fig, ax = plt.subplots()
-    ax.plot(df.index, df, label='Downloads of {package_name}', color='#31c487')
+    color = choice(['#31c487', '#f26638', '#bd870b', '#a2bd0b', 
+        '#0bbd5b', '#0bbda2', '#0babbd', '#0b7fbd', '#0b43bd',
+        '#400bbd', '#610bbd', '#bd0b55'])
+    ax.plot(df.index, df, label='Downloads of {package_name}', color=color)
     ax.set_xticks(df.index)
     ax.set_xticklabels([el.strftime('%Y-%m-%d') for el in df.index])
     ylabels = []
@@ -29,10 +33,8 @@ def create_linear_plot(start_date, downloads):
     return plt
 
 
-def save_plot_to_temp_file(plt, file_name):
-    plt.savefig(file_name)
-
 def generate_graph(start_date, downloads, file_name):
+    """ generate graph and save it to the file """
     plt = create_linear_plot(start_date, downloads)
-    save_plot_to_temp_file(plt, file_name)
+    plt.savefig(file_name)
     return file_name

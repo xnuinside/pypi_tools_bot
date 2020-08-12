@@ -1,64 +1,31 @@
-
 import os
 import logging
-from functools import wraps
 import sentry_sdk
 from aiogram import Bot, Dispatcher, executor, types
 from datetime import datetime, timedelta
-from pypi_tools.logic import validate_input_logic
+from pypi_tools.logic import remove_track_for_package
 import pypi_tools.data as d
+from pypi_tools.helpers import validate_input
 import pypi_tools.vizualizer as v
-
 import pypi_tools.readme as r
-from pypi_tools.models import init_db, User, Chat
 import asyncio
+import aioredis
 
 
 logging.basicConfig(level=logging.INFO)
-
+redis_host = f"redis://{os.environ.get('REDIS_HOST')}"
 #sentry_sdk.init(os.environ["SENTRY_PATH"])
 
 bot = Bot(token=os.environ["BOT_API_KEY"], parse_mode="html")
 dp = Dispatcher(bot)
 
 
-def validate_input(command, custom_error=None, additional_error=None, known_sub_commands=None):
-    def validate_input_inner(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            message = args[0]
-            output, sub_command = validate_input_logic(
-                message, command, custom_error, additional_error, known_sub_commands)
-            message.output = output
-            message.sub_command = sub_command
-            result = func(message)
-            return result
-        return wrapper
-    return validate_input_inner
-
-
 @dp.message_handler(commands=['start'])
 async def send_welcome(message):
-    if 'db' not in dp.__dict__:
-        dp.__dict__['db'] = await init_db()
-    user_id = message.chat.username
-    user = await User.get(user_id)
-    if not user:
-        user = await User.create(**{'id': user_id,
-                                    'first_name': message.chat.first_name,
-                                    'last_name': message.chat.last_name})
-    chat_id = message.chat.id
-    chat = await Chat.get(chat_id)
-    if not chat:
-        await Chat.create(**{'id': chat_id, 'type': message.chat.type})
-    else:
-        chat_new = chat.to_dict()
-        await chat.update(**chat_new).apply()
     text = f"Hello, {message.chat.first_name} {message.chat.last_name}! \n" \
            f"Welcome to <b>PyPi Tools Bot.</b>\n\n" \
            "This Bot created special to obtain information from Official Python PyPi Server\n" \
            + r.help_text + r.current_version
-
     await message.answer(text)
 
 
@@ -154,15 +121,40 @@ async def releases_command(message):
                 output += f"<b>{version}</b>: {v_date}\n"
     await message.answer(output)
 
+track_sub_commands = {'stop': lambda key: remove_track_for_package(key), 
+                      'nodev': 'nodev'}
 
-@dp.message_handler(commands=['track'])
-@validate_input(command='track')
+@dp.message_handler(commands=['track', 'track:stop', 'track:nodev'])
+@validate_input(command='track',
+                known_sub_commands=track_sub_commands,
+                additional_error="Or use with sub-command to stop track a package releases"
+                                 "/track:stop aiohttp")
 async def track_command(message):
+    """ handler to react on /track command and it sub-commands"""
+    redis = await aioredis.create_redis(redis_host)
     output = message.output
-    print(output)
-    
+    sub_command = message.sub_command
     if len(output.split()) == 1:
-        print(output)
+        package_name = output
+        chat_id = str(message.chat.id)
+        key = chat_id + ":" + package_name
+        if sub_command and sub_command != 'nodev':
+            output = await sub_command(key)
+        else:
+            nodev = False
+            if sub_command:
+                nodev = True
+            versions = await d.get_release_list(package_name, nodev)
+            if versions is None:
+                output = f'Package {package_name} does not exists'
+            else:
+                current_version = d.get_last_release_version(versions)
+                output = f"Current {package_name} version is {current_version} \n" \
+                "You will be announced with new version release"
+                version = current_version[0]
+                if nodev:
+                    version = version + ':nodev'
+                await redis.set(key, version)
     await message.answer(output)
 
 
