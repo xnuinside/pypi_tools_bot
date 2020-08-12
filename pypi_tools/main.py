@@ -14,7 +14,7 @@ import aioredis
 
 logging.basicConfig(level=logging.INFO)
 redis_host = f"redis://{os.environ.get('REDIS_HOST')}"
-#sentry_sdk.init(os.environ["SENTRY_PATH"])
+sentry_sdk.init(os.environ["SENTRY_PATH"])
 
 bot = Bot(token=os.environ["BOT_API_KEY"], parse_mode="html")
 dp = Dispatcher(bot)
