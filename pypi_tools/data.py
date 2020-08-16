@@ -122,7 +122,6 @@ async def request_package_info_from_pypi(package_name, detailed=False):
 
 async def get_release_list(package_name, nodev=False):
     result = httpx.get(f"https://pypi.org/rss/project/{package_name}/releases.xml")
-    print(result.status_code)
     if result.status_code == 404:
         return None
     executor = ThreadPoolExecutor(max_workers=1)

@@ -14,7 +14,8 @@ import aioredis
 
 logging.basicConfig(level=logging.INFO)
 redis_host = f"redis://{os.environ.get('REDIS_HOST')}"
-sentry_sdk.init(os.environ["SENTRY_PATH"])
+
+#sentry_sdk.init(os.environ["SENTRY_PATH"])
 
 bot = Bot(token=os.environ["BOT_API_KEY"], parse_mode="html")
 dp = Dispatcher(bot)
@@ -131,30 +132,31 @@ track_sub_commands = {'stop': lambda key: remove_track_for_package(key),
                                  "/track:stop aiohttp")
 async def track_command(message):
     """ handler to react on /track command and it sub-commands"""
-    redis = await aioredis.create_redis(redis_host)
-    output = message.output
-    sub_command = message.sub_command
-    if len(output.split()) == 1:
-        package_name = output
-        chat_id = str(message.chat.id)
-        key = chat_id + ":" + package_name
-        if sub_command and sub_command != 'nodev':
-            output = await sub_command(key)
-        else:
-            nodev = False
-            if sub_command:
-                nodev = True
-            versions = await d.get_release_list(package_name, nodev)
-            if versions is None:
-                output = f'Package {package_name} does not exists'
+    pool = await aioredis.create_redis_pool(redis_host)
+    with await pool as redis:
+        output = message.output
+        sub_command = message.sub_command
+        if len(output.split()) == 1:
+            package_name = output
+            chat_id = str(message.chat.id)
+            key = chat_id + ":" + package_name
+            if sub_command and sub_command != 'nodev':
+                output = await sub_command(key)
             else:
-                current_version = d.get_last_release_version(versions)
-                output = f"Current {package_name} version is {current_version} \n" \
-                "You will be announced with new version release"
-                version = current_version[0]
-                if nodev:
-                    version = version + ':nodev'
-                await redis.set(key, version)
+                nodev = False
+                if sub_command:
+                    nodev = True
+                versions = await d.get_release_list(package_name, nodev)
+                if versions is None:
+                    output = f'Package {package_name} does not exists'
+                else:
+                    current_version = d.get_last_release_version(versions)
+                    output = f"Current {package_name} version is {current_version} \n" \
+                    "You will be announced with new version release"
+                    version = current_version[0]
+                    if nodev:
+                        version = version + ':nodev'
+                    await redis.set(key, version)
     await message.answer(output)
 
 
@@ -168,4 +170,3 @@ if __name__ == '__main__':
         executor.start_polling(dp, skip_updates=True)
     except Exception as e:
         sentry_sdk.capture_exception(e)
-

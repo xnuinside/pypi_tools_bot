@@ -3,6 +3,8 @@ import os
 import xml.etree.ElementTree as ET
 import re
 
+redis_host = f"redis://{os.environ.get('REDIS_HOST')}"
+
 def parse_xml_file_with_version(_text, nodev=False):
     """parse f"https://pypi.org/rss/project/{package_name}/releases.xml to get list of package releases"""
     root = ET.fromstring(_text)
@@ -26,13 +28,14 @@ def parse_xml_file_with_version(_text, nodev=False):
 
 
 async def remove_track_for_package(key):
-    redis = await aioredis.create_redis(os.environ.get("REDIS_HOST"))
-    key_in_redis = await redis.get(key)
-    if key_in_redis is None:
-        output = f"You did not track package <b>{key.split(':')[1]} </b>\n\n" \
-                 f"<i>If you want start track package releases - use command /track package_name</i>"    
-    else:
-        await redis.delete(key)
-        output = f"Package <b>{key.split(':')[1]}</b> was removed from your track. \n" \
-                 f"You will not get information about new releases"
-    return output
+    pool = await aioredis.create_redis_pool(redis_host)
+    with await pool as redis:
+        key_in_redis = await redis.get(key)
+        if key_in_redis is None:
+            output = f"You did not track package <b>{key.split(':')[1]} </b>\n\n" \
+                    f"<i>If you want start track package releases - use command /track package_name</i>"    
+        else:
+            await redis.delete(key)
+            output = f"Package <b>{key.split(':')[1]}</b> was removed from your track. \n" \
+                    f"You will not get information about new releases"
+        return output

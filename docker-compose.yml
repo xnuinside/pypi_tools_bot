@@ -32,7 +32,7 @@ services:
       REDIS_PORT: 6379
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      /redis/data:/data
+      - ./redis/data:/data
     ports:
       # for local test set "6379:6379"
       - 6379
