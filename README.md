@@ -2,7 +2,7 @@
 
 Bot provide set of commands to work with PyPi 
 
-You can use Bot in Telegram - https://t.me/pypi_tools_bot (temporary unavailable)
+You can use Bot in Telegram - https://t.me/pypi_tools_bot (alive and you can use it and try)
 
 Or set up it & run on your own server & telegram bot.
 
